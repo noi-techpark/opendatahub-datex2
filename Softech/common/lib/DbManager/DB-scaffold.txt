@@ -1,0 +1,19 @@
+Istruzioni per generare il modelle EF da database esistente.
+(l'aggiunta di tabelle al modello prevede la modifica di questo file)
+Da eseguire da Visualizza - Altre finestre - Console di gestione dei pacchetti
+
+// Produzione
+//...
+
+// Test
+Scaffold-DbContext "host=localhost;database=postgres;user Id=postgres;Password=pgpass;" Npgsql.EntityFrameworkCore.PostgreSQL -Tables TAB_DESTINATARI, TAB_PARAMETRI, TAB_SOTTOTIPI -UseDatabaseNames -NoPluralize -OutputDir DBModel -Namespace DbManager -Force -NoOnConfiguring
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Dopo aver rigenerato il modello, nel file postgresContext.cs commentare le righe
+
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql("host=localhost;database=postgres;user Id=postgres;Password=pgpass;");
+
+altrimenti la stringa di connessione impostata nel file config viene ignorata
