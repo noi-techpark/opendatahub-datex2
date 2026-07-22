@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatexPub", "DatexPub.csproj", "{866A04A3-0D00-4F25-AFB9-8209572F4A86}"
+	ProjectSection(ProjectDependencies) = postProject
+		{25A410A9-5635-498A-8184-D5C161A5CB38} = {25A410A9-5635-498A-8184-D5C161A5CB38}
+		{268437AD-5EC6-4EDF-828C-67AE590E7DA1} = {268437AD-5EC6-4EDF-828C-67AE590E7DA1}
+		{60409C3D-8E45-453D-97B7-B1DD23A29B3E} = {60409C3D-8E45-453D-97B7-B1DD23A29B3E}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbManager", "..\..\lib\DbManager\DbManager.csproj", "{60409C3D-8E45-453D-97B7-B1DD23A29B3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Supporto", "..\..\lib\Supporto\Supporto.csproj", "{268437AD-5EC6-4EDF-828C-67AE590E7DA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatexModelOrig", "..\..\lib\DatexModelOrig\DatexModelOrig.csproj", "{25A410A9-5635-498A-8184-D5C161A5CB38}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{866A04A3-0D00-4F25-AFB9-8209572F4A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{866A04A3-0D00-4F25-AFB9-8209572F4A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{866A04A3-0D00-4F25-AFB9-8209572F4A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{866A04A3-0D00-4F25-AFB9-8209572F4A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60409C3D-8E45-453D-97B7-B1DD23A29B3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60409C3D-8E45-453D-97B7-B1DD23A29B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60409C3D-8E45-453D-97B7-B1DD23A29B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60409C3D-8E45-453D-97B7-B1DD23A29B3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{268437AD-5EC6-4EDF-828C-67AE590E7DA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{268437AD-5EC6-4EDF-828C-67AE590E7DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{268437AD-5EC6-4EDF-828C-67AE590E7DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{268437AD-5EC6-4EDF-828C-67AE590E7DA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25A410A9-5635-498A-8184-D5C161A5CB38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25A410A9-5635-498A-8184-D5C161A5CB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25A410A9-5635-498A-8184-D5C161A5CB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25A410A9-5635-498A-8184-D5C161A5CB38}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {941FC34D-7CC1-4B07-A5C8-05D60AA37413}
+	EndGlobalSection
+EndGlobal
