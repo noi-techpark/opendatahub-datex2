@@ -1,4 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+// SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+//
+// SPDX-License-Identifier: CC0-1.0
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NLog;
 using System;

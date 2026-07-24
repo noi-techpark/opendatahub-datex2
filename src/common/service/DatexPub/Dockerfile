@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+# SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
