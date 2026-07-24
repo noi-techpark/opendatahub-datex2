@@ -1,0 +1,30 @@
+﻿<!--
+SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Connected Services\" />
+    <Folder Include="Proxy\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DbManager\DbManager.csproj" />
+    <ProjectReference Include="..\Supporto\Supporto.csproj" />
+  </ItemGroup>
+
+</Project>
