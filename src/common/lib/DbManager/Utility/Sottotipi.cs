@@ -1,4 +1,9 @@
-﻿using Supporto;
+﻿// SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+// SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+//
+// SPDX-License-Identifier: CC0-1.0
+
+using Supporto;
 using System;
 using System.Collections.Generic;
 using System.Linq;

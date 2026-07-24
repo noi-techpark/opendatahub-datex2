@@ -1,3 +1,12 @@
+﻿REM SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+REM SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+REM
+REM SPDX-License-Identifier: CC0-1.0
+
+# SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 docker stop datexpub
 docker container prune --force
 

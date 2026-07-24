@@ -1,4 +1,4 @@
-Istruzioni per generare il modelle EF da database esistente.
+﻿Istruzioni per generare il modelle EF da database esistente.
 (l'aggiunta di tabelle al modello prevede la modifica di questo file)
 Da eseguire da Visualizza - Altre finestre - Console di gestione dei pacchetti
 

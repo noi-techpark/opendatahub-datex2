@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
+
+<!--
+SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 <xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:D2LogicalModel="http://datex2.eu/schema/2/2_0" version="2.3" targetNamespace="http://datex2.eu/schema/2/2_0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:complexType name="_AreaExtensionType">
     <xs:sequence>

@@ -1,3 +1,8 @@
+﻿// SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+// SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+//
+// SPDX-License-Identifier: CC0-1.0
+
 using DbManager;
 using DbManager.Utility;
 using DatexPub.Model;
@@ -205,7 +210,7 @@ namespace DatexPub
 					}
 					else
 					{
-						// se non ha data di fine, � sempre valido
+						// se non ha data di fine, è sempre valido
 						if (!ev.EndTime.HasValue)
 							return true;
 
