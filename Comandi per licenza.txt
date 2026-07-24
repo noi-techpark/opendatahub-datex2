@@ -1,0 +1,5 @@
+#applica la licenza a tutti i file
+python -m reuse annotate --license CC0-1.0 --copyright "2026 NOI Techpark <digital@noi.bz.it>" --recursive --fallback-dot-license .
+
+# verifica
+python -m reuse lint

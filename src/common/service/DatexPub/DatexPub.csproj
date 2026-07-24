@@ -1,0 +1,37 @@
+<!--
+SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
+SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-DatexPub-3e63afa3-cc7d-4fee-8c79-121c9172bcc2</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <PublishAot>False</PublishAot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.14" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\DatexModelOrig\DatexModelOrig.csproj" />
+    <ProjectReference Include="..\..\lib\DbManager\DbManager.csproj" />
+    <ProjectReference Include="..\..\lib\Supporto\Supporto.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Script\" />
+  </ItemGroup>
+</Project>
