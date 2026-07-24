@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+services:
+  db:
+    image: postgres:17.0
+    restart: unless-stopped
+    shm_size: 1g
+    environment:
+      POSTGRES_PASSWORD: pgpass
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5555:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+
+  datexpub:
+    image: datexpub:local
+    restart: unless-stopped
+    user: root
+    environment:
+      TZ: Europe/Rome
+    volumes:
+      - ./appsettings.json:/app/appsettings.json
+      - ./NLog.config:/app/NLog.config
+      - ./log:/app/log
+      - ./pubblicazioni:/app/pubblicazioni
+    depends_on:
+      - db
+
+volumes:
+  pg_data:

@@ -60,3 +60,6 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Local docker test run output
+local-test/pubblicazioni/
