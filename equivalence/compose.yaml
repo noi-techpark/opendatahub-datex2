@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+services:
+  fixture-server:
+    image: python:3-alpine
+    working_dir: /fixtures
+    volumes:
+      - ./fixtures:/fixtures:ro
+    command: ["python3", "-m", "http.server", "8000"]
+
+  db:
+    image: postgres:17.0
+    shm_size: 1g
+    environment:
+      POSTGRES_PASSWORD: pgpass
+    volumes:
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+
+  datexpub:
+    image: datexpub:local
+    user: root
+    environment:
+      TZ: Europe/Rome
+    volumes:
+      - ./appsettings.json:/app/appsettings.json
+      - ../local-test/NLog.config:/app/NLog.config
+      - ./log:/app/log
+      - ./pubblicazioni:/app/pubblicazioni
+    depends_on:
+      - db
+      - fixture-server
