@@ -1,0 +1,89 @@
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Mirrors equivalence/initdb.sql exactly (same category->classname/typeValue/
+# severity mappings, "prohibition" disabled), used by go/equivalence_test.go
+# to run the Go pipeline against the same fixture data fed to the dockerized
+# C# app when regen_golden.sh captured testing/golden/.
+
+listenAddr: ":8080"
+eventsUrl: "http://fixture-server:8000/v1/Announcement"
+source: "PROVINCE_BZ"
+pollIntervalSeconds: 20
+idPrefix: "urn:announcements:provincebz:"
+internalSupplier: "ITPBZ"
+
+subtypes:
+  - category: "traffic-event:congestion"
+    classname: "AbnormalTraffic"
+    typeValue: "slowTraffic"
+    severity: "high"
+    enabled: true
+  - category: "traffic-event:accident"
+    classname: "Accident"
+    typeValue: "accident"
+    severity: "high"
+    enabled: true
+  - category: "traffic-event:animal-on-road"
+    classname: "AnimalPresenceObstruction"
+    typeValue: "animalsOnTheRoad"
+    severity: "high"
+    enabled: true
+  - category: "traffic-event:caution"
+    classname: "RoadOrCarriagewayOrLaneManagement"
+    typeValue: "other"
+    severity: "medium"
+    enabled: true
+  - category: "traffic-event:road-work"
+    classname: "MaintenanceWorks"
+    typeValue: "roadworks"
+    severity: "medium"
+    enabled: true
+  - category: "traffic-event:weather-related"
+    classname: "PoorEnvironmentCondition"
+    typeValue: "fog"
+    severity: "high"
+    enabled: true
+  - category: "traffic-event:event"
+    classname: "PublicEvent"
+    typeValue: "majorEvent"
+    severity: "medium"
+    enabled: true
+  - category: "traffic-event:prohibition"
+    classname: "RoadOrCarriagewayOrLaneManagement"
+    typeValue: "other"
+    severity: "high"
+    enabled: false
+  - category: "traffic-event:closure"
+    classname: "RoadOrCarriagewayOrLaneManagement"
+    typeValue: "roadClosed"
+    severity: "high"
+    enabled: true
+  - category: "traffic-event:hindrance"
+    classname: "RoadOrCarriagewayOrLaneManagement"
+    typeValue: "singleAlternateLineTraffic"
+    severity: "medium"
+    enabled: true
+  - category: "traffic-event:speed-camera"
+    classname: "SpeedManagement"
+    typeValue: "policeSpeedChecksInOperation"
+    severity: "low"
+    enabled: true
+  - category: "traffic-event:road-condition"
+    classname: "WinterDrivingManagement"
+    typeValue: "winterEquipmentOnBoardRequired"
+    extraAttribute: "complianceOption"
+    extraValue: "mandatory"
+    severity: "medium"
+    enabled: true
+
+recipients:
+  - supplier: "IT492"
+    description: "A22 - Autostrada del Brennero"
+    path: "/invio/IT492/SituationPublication.xml"
+    enabled: true
+  - supplier: "IT999"
+    description: "Test second recipient"
+    path: "/invio/IT999/SituationPublication.xml"
+    enabled: true
