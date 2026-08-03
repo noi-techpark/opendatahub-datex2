@@ -63,3 +63,8 @@ nunit-*.xml
 
 # Local docker test run output
 local-test/pubblicazioni/
+equivalence/pubblicazioni/
+equivalence/log/
+
+# Go build output
+go/datexpub
