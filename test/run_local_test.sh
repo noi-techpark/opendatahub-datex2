@@ -6,11 +6,15 @@
 # End-to-end integration test: builds the production Docker image, runs it
 # against the real Open Data Hub API using the bundled config.example.yaml,
 # and checks that it actually serves a DATEX II publication plus the API
-# docs. Requires network access to reach the Open Data Hub API.
+# docs. Requires network access to reach the Open Data Hub API, and xmllint
+# (libxml2) to validate the publication against the DATEX II XSD.
 
 set -euo pipefail
 
+command -v xmllint >/dev/null || { echo "xmllint not found (install libxml2-utils/libxml2)"; exit 1; }
+
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCHEMA="$TEST_DIR/schema/DATEXIISchema_2_2_3.xsd"
 BASE_URL="http://localhost:8090"
 PROVIDER_PATH="/datex/2/province-bz/situation-publication.xml"
 
@@ -72,6 +76,12 @@ fi
 if ! grep -q "SituationPublication" <<<"$body"; then
   echo "FAIL: response has no SituationPublication payload"
   echo "$body"
+  exit 1
+fi
+
+echo "==> Validating the response against the DATEX II 2.2.3 XSD"
+if ! xmllint --noout --schema "$SCHEMA" - <<<"$body"; then
+  echo "FAIL: response does not validate against $SCHEMA"
   exit 1
 fi
 
