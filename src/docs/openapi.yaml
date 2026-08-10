@@ -30,17 +30,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                description: Provider name to feed name to URL.
+                additionalProperties:
                   type: object
-                  properties:
-                    provider:
-                      type: string
-                    feeds:
-                      type: object
-                      description: Feed name to URL.
-                      additionalProperties:
-                        type: string
+                  additionalProperties:
+                    type: string
   /datex/2/{provider}/situation-publication.xml:
     get:
       summary: DATEX II situation publication
