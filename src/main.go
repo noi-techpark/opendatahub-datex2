@@ -46,6 +46,8 @@ func runCycle(cfg *Config, srv *Server) {
 		return
 	}
 
+	srv.setBaseURL(cfg.BaseURL)
+
 	now := time.Now()
 	items = filterBySource(items, cfg.Source)
 	items = filterCurrent(items, now)
@@ -63,7 +65,7 @@ func runCycle(cfg *Config, srv *Server) {
 		if !rec.Enabled {
 			continue
 		}
-		srv.publish(rec.Path, body)
+		srv.publish(cfg.Provider, rec.Type, rec.Path, body)
 		published++
 	}
 

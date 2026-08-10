@@ -12,46 +12,46 @@ import (
 	"time"
 )
 
-// odhItem is the subset of Open Data Hub Announcement item fields this
+// openDataHubItem is the subset of Open Data Hub Announcement item fields this
 // service reads, matching the field list requested in eventsUrl.
-type odhItem struct {
+type openDataHubItem struct {
 	Id           string                       `json:"Id"`
 	TagIds       []string                     `json:"TagIds"`
 	StartTime    time.Time                    `json:"StartTime"`
 	EndTime      *time.Time                   `json:"EndTime"`
 	CreationTime time.Time                    `json:"CreationTime"`
 	VersionTime  time.Time                    `json:"VersionTime"`
-	Meta         odhMeta                      `json:"_Meta"`
-	Geo          map[string]odhGeo            `json:"Geo"`
+	Meta         openDataHubMeta              `json:"_Meta"`
+	Geo          map[string]openDataHubGeo    `json:"Geo"`
 	Mapping      map[string]map[string]string `json:"Mapping"`
-	Detail       map[string]odhDetail         `json:"Detail"`
+	Detail       map[string]openDataHubDetail `json:"Detail"`
 }
 
-type odhMeta struct {
-	Source     string        `json:"Source"`
-	UpdateInfo odhUpdateInfo `json:"UpdateInfo"`
+type openDataHubMeta struct {
+	Source     string                `json:"Source"`
+	UpdateInfo openDataHubUpdateInfo `json:"UpdateInfo"`
 }
 
-type odhUpdateInfo struct {
+type openDataHubUpdateInfo struct {
 	UpdateHistory []struct{} `json:"UpdateHistory"`
 }
 
-type odhGeo struct {
+type openDataHubGeo struct {
 	Latitude  *float64 `json:"Latitude"`
 	Longitude *float64 `json:"Longitude"`
 }
 
-type odhDetail struct {
+type openDataHubDetail struct {
 	Title    string `json:"Title"`
 	BaseText string `json:"BaseText"`
 }
 
-type odhResponse struct {
-	TotalResults int       `json:"TotalResults"`
-	Items        []odhItem `json:"Items"`
+type openDataHubResponse struct {
+	TotalResults int               `json:"TotalResults"`
+	Items        []openDataHubItem `json:"Items"`
 }
 
-func fetchEvents(url string) ([]odhItem, error) {
+func fetchEvents(url string) ([]openDataHubItem, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -70,8 +70,8 @@ func fetchEvents(url string) ([]odhItem, error) {
 	return parseEvents(body)
 }
 
-func parseEvents(body []byte) ([]odhItem, error) {
-	var parsed odhResponse
+func parseEvents(body []byte) ([]openDataHubItem, error) {
+	var parsed openDataHubResponse
 	if err := json.Unmarshal(body, &parsed); err != nil {
 		return nil, fmt.Errorf("decode response: %w", err)
 	}
@@ -111,7 +111,7 @@ func sameLocalDay(a, b time.Time) bool {
 	return ay == by && am == bm && ad == bd
 }
 
-func categoryOf(item odhItem) (string, bool) {
+func categoryOf(item openDataHubItem) (string, bool) {
 	for _, tag := range item.TagIds {
 		for _, known := range trafficEventTags {
 			if tag == known {
@@ -126,7 +126,7 @@ func categoryOf(item odhItem) (string, bool) {
 // on top of the source= query parameter already in eventsUrl, in case the
 // upstream API ever returns items from other sources. The source id to
 // match against is config-driven, so this works for any provider's feed.
-func filterBySource(items []odhItem, source string) []odhItem {
+func filterBySource(items []openDataHubItem, source string) []openDataHubItem {
 	out := items[:0:0]
 	for _, it := range items {
 		if it.Meta.Source == source {
@@ -140,7 +140,7 @@ func filterBySource(items []odhItem, source string) []odhItem {
 // categories need to have started today (if open-ended) or not yet ended;
 // everything else is valid unless it has an end time that's already
 // passed.
-func filterCurrent(items []odhItem, now time.Time) []odhItem {
+func filterCurrent(items []openDataHubItem, now time.Time) []openDataHubItem {
 	out := items[:0:0]
 
 	for _, it := range items {

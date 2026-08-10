@@ -35,10 +35,10 @@ type event struct {
 	SourceName   string
 }
 
-// mapEvents builds the internal event list from filtered ODH items,
+// mapEvents builds the internal event list from filtered Open Data Hub items,
 // skipping any item whose tags don't match one of the 12 known
 // traffic-event categories.
-func mapEvents(items []odhItem, cfg *Config) []event {
+func mapEvents(items []openDataHubItem, cfg *Config) []event {
 	var out []event
 	for _, item := range items {
 		category, ok := categoryOf(item)
@@ -83,7 +83,7 @@ func mapEvents(items []odhItem, cfg *Config) []event {
 	return out
 }
 
-func joinTitleAndText(d odhDetail) string {
+func joinTitleAndText(d openDataHubDetail) string {
 	if d.BaseText == "" {
 		return d.Title
 	}
