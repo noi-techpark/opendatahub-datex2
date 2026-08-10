@@ -14,13 +14,22 @@ import (
 
 // openDataHubItem is the subset of Open Data Hub Announcement item fields this
 // service reads, matching the field list requested in eventsUrl.
+//
+// CreationTime/VersionTime bind to the "FirstImport"/"LastChange" JSON
+// fields. The Announcement schema (content.api.opendatahub.com's
+// /swagger/v1/swagger.json) has no "CreationTime"/"VersionTime" properties
+// at all - only FirstImport/LastChange - matching AnnouncementModel.cs's
+// Item class. The API's fields= query parameter doesn't validate against
+// the schema: it echoes back any field name you ask for, real or not, as
+// null, so requesting "CreationTime"/"VersionTime" "succeeds" but is
+// meaningless.
 type openDataHubItem struct {
 	Id           string                       `json:"Id"`
 	TagIds       []string                     `json:"TagIds"`
 	StartTime    time.Time                    `json:"StartTime"`
 	EndTime      *time.Time                   `json:"EndTime"`
-	CreationTime time.Time                    `json:"CreationTime"`
-	VersionTime  time.Time                    `json:"VersionTime"`
+	CreationTime time.Time                    `json:"FirstImport"`
+	VersionTime  time.Time                    `json:"LastChange"`
 	Meta         openDataHubMeta              `json:"_Meta"`
 	Geo          map[string]openDataHubGeo    `json:"Geo"`
 	Mapping      map[string]map[string]string `json:"Mapping"`

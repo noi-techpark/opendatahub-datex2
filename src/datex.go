@@ -13,6 +13,18 @@ import "encoding/xml"
 // subtype-specific fields as optional, since only 10 subtypes are ever
 // produced and each contributes at most two simple fields. That's simpler
 // than reproducing the schema's inheritance/polymorphism machinery.
+//
+// The three XsiType fields use the namespace-qualified attr tag
+// ("http://.../XMLSchema-instance type,attr"), not a literal "xsi:type,attr"
+// string. The literal form does make Marshal emit a clean xsi:type= prefix
+// instead of a synthetic one (both are valid XML), but it silently breaks
+// Unmarshal: encoding/xml resolves a real xsi:type attribute to its
+// namespace URI regardless of what prefix the source document used, so a
+// literal "xsi:type" tag - matched by literal name, not by URI - never
+// matches it, and the field decodes as empty with no error. That broke
+// round-tripping this service's own output and, worse, parsing the real
+// reference C# app's XML in equivalence_test.go, which is why it's back to
+// the namespace-qualified form despite the uglier Marshal output.
 
 type D2LogicalModel struct {
 	XMLName          xml.Name             `xml:"d2LogicalModel"`
@@ -33,7 +45,7 @@ type InternationalIdentifier struct {
 }
 
 type SituationPublication struct {
-	XsiType            string                  `xml:"xsi:type,attr"`
+	XsiType            string                  `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
 	Lang               string                  `xml:"lang,attr"`
 	PublicationTime    string                  `xml:"publicationTime"`
 	PublicationCreator InternationalIdentifier `xml:"publicationCreator"`
@@ -89,7 +101,7 @@ type MultilingualStringValue struct {
 }
 
 type Point struct {
-	XsiType            string             `xml:"xsi:type,attr"`
+	XsiType            string             `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
 	PointByCoordinates PointByCoordinates `xml:"pointByCoordinates"`
 }
 
@@ -103,7 +115,7 @@ type PointCoordinates struct {
 }
 
 type SituationRecord struct {
-	XsiType                          string    `xml:"xsi:type,attr"`
+	XsiType                          string    `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
 	Id                               string    `xml:"id,attr"`
 	Version                          string    `xml:"version,attr"`
 	SituationRecordCreationReference string    `xml:"situationRecordCreationReference,omitempty"`
