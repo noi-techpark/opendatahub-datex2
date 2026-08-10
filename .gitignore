@@ -62,3 +62,10 @@ nunit-*.xml
 
 # Go build output
 src/datexpub
+
+# Equivalence test artifacts: fetched fresh and captured by
+# equivalence/run_equivalence_test.sh, never committed.
+equivalence/fixtures/
+equivalence/golden/
+equivalence/pubblicazioni/
+equivalence/log/

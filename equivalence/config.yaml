@@ -2,16 +2,14 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-# This example config is for the Bolzano/South Tyrol feed, but nothing in
-# the code assumes that - eventsUrl/source/idPrefix/internalSupplier are all
-# just config values. Supporting another region or place means writing
-# another config file like this one and running another instance of the
-# binary against it (its own listenAddr and recipient paths), not a code
-# change.
+# Mirrors equivalence/initdb.sql exactly (same category->classname/typeValue/
+# severity mappings, "prohibition" disabled), used by
+# src/equivalence_test.go to run the Go pipeline against the same fixture
+# data fed to the dockerized C# app.
+
 listenAddr: ":8080"
-baseUrl: "http://localhost:8080"
 provider: "province-bz"
-eventsUrl: "https://content.api.opendatahub.testingmachine.eu/v1/Announcement?pagesize=200000&tagfilter=announcement%3Atraffic-event&removenullvalues=true&getasidarray=false&source=PROVINCE_BZ&fields=Id%2CTagIds%2CGeo%2CMapping%2C_Meta%2CStartTime%2CEndTime%2CFirstImport%2CLastChange%2CDetail"
+eventsUrl: "http://fixture-server:8000/v1/Announcement"
 source: "PROVINCE_BZ"
 pollIntervalSeconds: 20
 idPrefix: "urn:announcements:provincebz:"
@@ -57,7 +55,7 @@ subtypes:
     classname: "RoadOrCarriagewayOrLaneManagement"
     typeValue: "other"
     severity: "high"
-    enabled: true
+    enabled: false
   - category: "traffic-event:closure"
     classname: "RoadOrCarriagewayOrLaneManagement"
     typeValue: "roadClosed"
