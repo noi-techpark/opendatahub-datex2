@@ -207,11 +207,11 @@ func TestNoSilentlyEmptyFields(t *testing.T) {
 		r := s.SituationRecords[0]
 		checked++
 
-		if !src.CreationTime.IsZero() && r.SituationRecordCreationTime == "" {
-			t.Errorf("situation %s: source FirstImport=%v but situationRecordCreationTime is empty", s.Id, src.CreationTime)
+		if !src.FirstImport.IsZero() && r.SituationRecordCreationTime == "" {
+			t.Errorf("situation %s: source FirstImport=%v but situationRecordCreationTime is empty", s.Id, src.FirstImport)
 		}
-		if !src.VersionTime.IsZero() && r.SituationRecordVersionTime == "" {
-			t.Errorf("situation %s: source LastChange=%v but situationRecordVersionTime is empty", s.Id, src.VersionTime)
+		if !src.LastChange.IsZero() && r.SituationRecordVersionTime == "" {
+			t.Errorf("situation %s: source LastChange=%v but situationRecordVersionTime is empty", s.Id, src.LastChange)
 		}
 		if geo, ok := src.Geo["position"]; ok && (geo.Latitude != nil || geo.Longitude != nil) {
 			c := r.GroupOfLocations.PointByCoordinates.PointCoordinates
