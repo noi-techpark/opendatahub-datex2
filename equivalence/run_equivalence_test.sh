@@ -67,4 +67,4 @@ if [ "$found" -eq 0 ]; then
 fi
 
 echo "==> Running Go equivalence test"
-(cd "$REPO_ROOT/src" && go test -run TestEquivalenceAgainstLegacyGolden -v ./...)
+(cd "$REPO_ROOT/src" && go test -run 'TestEquivalenceAgainstLegacyGolden|TestNoSilentlyEmptyFields' -v ./...)
