@@ -21,7 +21,7 @@ func TestFilterCurrent_ShortLivedNoEndTimeMustStartToday(t *testing.T) {
 	today := time.Date(now.Year(), now.Month(), now.Day(), 2, 0, 0, 0, now.Location())
 	yesterday := today.AddDate(0, 0, -1)
 
-	items := []odhItem{
+	items := []openDataHubItem{
 		{Id: "started-today", TagIds: []string{"traffic-event:congestion"}, StartTime: today},
 		{Id: "started-yesterday", TagIds: []string{"traffic-event:congestion"}, StartTime: yesterday},
 	}
@@ -34,7 +34,7 @@ func TestFilterCurrent_ShortLivedNoEndTimeMustStartToday(t *testing.T) {
 
 func TestFilterCurrent_LongPeriodNoEndTimeAlwaysCurrent(t *testing.T) {
 	now := time.Now()
-	items := []odhItem{
+	items := []openDataHubItem{
 		{Id: "old-caution", TagIds: []string{"traffic-event:caution"}, StartTime: now.AddDate(-2, 0, 0)},
 	}
 	out := filterCurrent(items, now)
@@ -45,7 +45,7 @@ func TestFilterCurrent_LongPeriodNoEndTimeAlwaysCurrent(t *testing.T) {
 
 func TestFilterCurrent_ExpiredEventsExcluded(t *testing.T) {
 	now := time.Now()
-	items := []odhItem{
+	items := []openDataHubItem{
 		{Id: "expired-long-period", TagIds: []string{"traffic-event:caution"}, StartTime: now.AddDate(0, -1, 0), EndTime: ptr(now.AddDate(0, 0, -1))},
 		{Id: "expired-short-lived", TagIds: []string{"traffic-event:accident"}, StartTime: now.AddDate(0, -1, 0), EndTime: ptr(now.AddDate(0, 0, -1))},
 	}
@@ -57,7 +57,7 @@ func TestFilterCurrent_ExpiredEventsExcluded(t *testing.T) {
 
 func TestFilterCurrent_ShortLivedFutureWithEndTimeIncluded(t *testing.T) {
 	now := time.Now()
-	items := []odhItem{
+	items := []openDataHubItem{
 		{Id: "future-accident", TagIds: []string{"traffic-event:accident"}, StartTime: now.AddDate(1, 0, 0), EndTime: ptr(now.AddDate(1, 0, 1))},
 	}
 	out := filterCurrent(items, now)
@@ -67,9 +67,9 @@ func TestFilterCurrent_ShortLivedFutureWithEndTimeIncluded(t *testing.T) {
 }
 
 func TestFilterBySource_ExcludesOtherSources(t *testing.T) {
-	items := []odhItem{
-		{Id: "match", Meta: odhMeta{Source: "PROVINCE_BZ"}},
-		{Id: "other", Meta: odhMeta{Source: "OTHER_PROVINCE"}},
+	items := []openDataHubItem{
+		{Id: "match", Meta: openDataHubMeta{Source: "PROVINCE_BZ"}},
+		{Id: "other", Meta: openDataHubMeta{Source: "OTHER_PROVINCE"}},
 	}
 	out := filterBySource(items, "PROVINCE_BZ")
 	if len(out) != 1 || out[0].Id != "match" {
@@ -78,7 +78,7 @@ func TestFilterBySource_ExcludesOtherSources(t *testing.T) {
 }
 
 func TestCategoryOf_UnknownTagSkipped(t *testing.T) {
-	if _, ok := categoryOf(odhItem{TagIds: []string{"traffic-event:not-a-real-category"}}); ok {
+	if _, ok := categoryOf(openDataHubItem{TagIds: []string{"traffic-event:not-a-real-category"}}); ok {
 		t.Fatal("expected an unrecognized tag to not match any category")
 	}
 }
@@ -88,9 +88,9 @@ func TestCategoryOf_UnknownTagSkipped(t *testing.T) {
 // in the same batch - it should just default that one item's coordinates.
 func TestMapEvents_MissingGeoDoesNotDropOtherEvents(t *testing.T) {
 	cfg := &Config{IDPrefix: "urn:test:"}
-	items := []odhItem{
+	items := []openDataHubItem{
 		{Id: "urn:test:no-geo", TagIds: []string{"traffic-event:hindrance"}},
-		{Id: "urn:test:has-geo", TagIds: []string{"traffic-event:congestion"}, Geo: map[string]odhGeo{
+		{Id: "urn:test:has-geo", TagIds: []string{"traffic-event:congestion"}, Geo: map[string]openDataHubGeo{
 			"position": {Latitude: floatPtr(46.5), Longitude: floatPtr(11.3)},
 		}},
 	}
@@ -114,7 +114,7 @@ func TestMapEvents_MissingGeoDoesNotDropOtherEvents(t *testing.T) {
 
 func floatPtr(f float64) *float64 { return &f }
 
-func ids(items []odhItem) []string {
+func ids(items []openDataHubItem) []string {
 	out := make([]string, len(items))
 	for i, it := range items {
 		out[i] = it.Id

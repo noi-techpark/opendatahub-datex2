@@ -18,6 +18,29 @@ externalDocs:
   description: GitHub repository
   url: https://github.com/noi-techpark/opendatahub-datex2
 paths:
+  /datex/2/:
+    get:
+      summary: List available providers
+      description: Returns the available providers, and the DATEX II files published for each.
+      tags:
+        - datex
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    provider:
+                      type: string
+                    feeds:
+                      type: object
+                      description: Feed name to URL.
+                      additionalProperties:
+                        type: string
   /datex/2/{provider}/situation-publication.xml:
     get:
       summary: DATEX II situation publication

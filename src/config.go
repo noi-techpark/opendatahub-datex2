@@ -15,6 +15,8 @@ import (
 // config changes apply without a restart.
 type Config struct {
 	ListenAddr          string      `yaml:"listenAddr"`
+	BaseURL             string      `yaml:"baseUrl"`
+	Provider            string      `yaml:"provider"`
 	EventsURL           string      `yaml:"eventsUrl"`
 	Source              string      `yaml:"source"`
 	PollIntervalSeconds int         `yaml:"pollIntervalSeconds"`
@@ -36,10 +38,14 @@ type Subtype struct {
 	Enabled        bool   `yaml:"enabled"`
 }
 
-// Recipient is one downstream consumer of the published DATEX II XML. Path
-// is where its feed is served; by convention it should follow
-// /datex/2/{provider}/situation-publication.xml.
+// Recipient is one DATEX II document published for this provider. Type
+// identifies which document it is (e.g. "situation-publication") - a
+// provider may publish more than one DATEX II document type in the future,
+// and not every provider necessarily offers the same set. Path is where it
+// is served; by convention it should follow
+// /datex/2/{provider}/{type}.xml.
 type Recipient struct {
+	Type        string `yaml:"type"`
 	Supplier    string `yaml:"supplier"`
 	Description string `yaml:"description"`
 	Path        string `yaml:"path"`

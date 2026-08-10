@@ -50,8 +50,17 @@ check_status() {
 
 check_status "/" 200
 check_status "/openapi.yaml" 200
+check_status "/datex/2/" 200
 check_status "$PROVIDER_PATH" 200
 check_status "/not-a-configured-path" 404
+
+echo "==> Checking the provider list includes the configured feed"
+providers="$(curl -s "$BASE_URL/datex/2/")"
+if ! grep -q "$PROVIDER_PATH" <<<"$providers"; then
+  echo "FAIL: /datex/2/ does not list $PROVIDER_PATH"
+  echo "$providers"
+  exit 1
+fi
 
 echo "==> Checking the response is a DATEX II publication"
 body="$(curl -s "$BASE_URL$PROVIDER_PATH")"

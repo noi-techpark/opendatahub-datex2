@@ -17,7 +17,9 @@ Datex 2 node to publish traffic events from the Open Data Hub
 ## API
 
 Each event provider's DATEX II XML is served at
-`/datex/2/{provider}/situation-publication.xml`.
+`/datex/2/{provider}/situation-publication.xml`. `/datex/2/` lists the
+available providers and, for each, the DATEX II files it currently
+publishes.
 
 `/` serves interactive API docs (Redoc), and `/openapi.yaml` the underlying spec.
 

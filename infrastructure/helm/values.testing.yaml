@@ -31,6 +31,8 @@ ingress:
 
 config:
   listenAddr: ":8080"
+  baseUrl: "https://datex.api.dev.testingmachine.eu"
+  provider: "province-bz"
   eventsUrl: "https://tourism.api.opendatahub.testingmachine.eu/v1/Announcement?pagesize=200000&tagfilter=announcement%3Atraffic-event&removenullvalues=true&getasidarray=false&source=PROVINCE_BZ&fields=Id%2CTagIds%2CGeo%2CMapping%2C_Meta%2CStartTime%2CEndTime%2CCreationTime%2CVersionTime%2CDetail"
   source: "PROVINCE_BZ"
   pollIntervalSeconds: 20
@@ -102,7 +104,8 @@ config:
       enabled: true
 
   recipients:
-    - supplier: "IT492"
+    - type: "situation-publication"
+      supplier: "IT492"
       description: "A22 - Brenner motorway"
       path: "/datex/2/province-bz/situation-publication.xml"
       enabled: true
