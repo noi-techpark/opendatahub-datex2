@@ -16,8 +16,13 @@ service:
 
 ingress:
   enabled: true
-  annotations: {}
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-prod"
   className: nginx
+  tls:
+    - hosts:
+        - datex.api.dev.testingmachine.eu
+      secretName: tls-datex2
   hosts:
     - host: datex.api.dev.testingmachine.eu
       paths:
