@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+services:
+  app:
+    build:
+      dockerfile: infrastructure/docker/Dockerfile
+      context: .
+      target: debug
+    env_file:
+      - .env
+    command: ["go", "run", ".", "-config", "config.example.yaml"]
+    volumes:
+      - ./src:/code
+      - pkg:/go/pkg/mod
+    working_dir: /code
+    tty: true
+    ports:
+      - ${SERVER_PORT}:8080
+
+volumes:
+  pkg:

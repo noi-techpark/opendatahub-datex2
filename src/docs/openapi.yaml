@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+openapi: 3.0.3
+info:
+  title: Datex II Traffic Events
+  version: "1.0"
+  description: |
+    This API republishes Open Data Hub traffic event announcements as DATEX II
+    SituationPublication XML feeds, one per event provider.
+
+    This API is considered an [R&D prototype](https://opendatahub.com/lifecycle-management/),
+    and thus we cannot guarantee future availability nor stability. If you intend to use
+    this API for production deployments, please contact the Open Data Hub team
+    help@opendatahub.com
+externalDocs:
+  description: GitHub repository
+  url: https://github.com/noi-techpark/opendatahub-datex2
+paths:
+  /datex/2/{provider}/situation-publication.xml:
+    get:
+      summary: DATEX II situation publication
+      description: Returns the latest DATEX II SituationPublication XML for the given event provider.
+      tags:
+        - datex
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          description: Event provider slug, e.g. province-bz
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+        "404":
+          description: Not found

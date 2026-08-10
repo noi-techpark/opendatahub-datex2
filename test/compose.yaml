@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile
+      target: build
+    command: ["-config=config.example.yaml"]
+    ports:
+      - "8090:8080"
