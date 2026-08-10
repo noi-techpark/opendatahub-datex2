@@ -12,28 +12,27 @@ import (
 	"time"
 )
 
-// openDataHubItem is the subset of Open Data Hub Announcement item fields this
-// service reads, matching the field list requested in eventsUrl.
-//
-// CreationTime/VersionTime bind to the "FirstImport"/"LastChange" JSON
-// fields. The Announcement schema (content.api.opendatahub.com's
-// /swagger/v1/swagger.json) has no "CreationTime"/"VersionTime" properties
-// at all - only FirstImport/LastChange - matching AnnouncementModel.cs's
-// Item class. The API's fields= query parameter doesn't validate against
-// the schema: it echoes back any field name you ask for, real or not, as
-// null, so requesting "CreationTime"/"VersionTime" "succeeds" but is
-// meaningless.
+// openDataHubItem is the subset of Open Data Hub Announcement item fields
+// this service reads, matching the field list requested in eventsUrl, named
+// exactly as the API names them (see AnnouncementModel.cs's Item class and
+// the Announcement schema at content.api.opendatahub.com's
+// /swagger/v1/swagger.json). Notably there is no "CreationTime"/
+// "VersionTime" here: the API does accept those as field names in the
+// fields= query parameter, but only because it echoes back any field name
+// you ask for, real or not, as null - they aren't real properties. The
+// event's actual creation/change timestamps are FirstImport/LastChange,
+// mapped onto event.CreationTime/event.VersionTime in mapEvents.
 type openDataHubItem struct {
-	Id           string                       `json:"Id"`
-	TagIds       []string                     `json:"TagIds"`
-	StartTime    time.Time                    `json:"StartTime"`
-	EndTime      *time.Time                   `json:"EndTime"`
-	CreationTime time.Time                    `json:"FirstImport"`
-	VersionTime  time.Time                    `json:"LastChange"`
-	Meta         openDataHubMeta              `json:"_Meta"`
-	Geo          map[string]openDataHubGeo    `json:"Geo"`
-	Mapping      map[string]map[string]string `json:"Mapping"`
-	Detail       map[string]openDataHubDetail `json:"Detail"`
+	Id          string                       `json:"Id"`
+	TagIds      []string                     `json:"TagIds"`
+	StartTime   time.Time                    `json:"StartTime"`
+	EndTime     *time.Time                   `json:"EndTime"`
+	FirstImport time.Time                    `json:"FirstImport"`
+	LastChange  time.Time                    `json:"LastChange"`
+	Meta        openDataHubMeta              `json:"_Meta"`
+	Geo         map[string]openDataHubGeo    `json:"Geo"`
+	Mapping     map[string]map[string]string `json:"Mapping"`
+	Detail      map[string]openDataHubDetail `json:"Detail"`
 }
 
 type openDataHubMeta struct {
