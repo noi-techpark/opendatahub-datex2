@@ -1,0 +1,112 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/noi-techpark/opendatahub-datex2/opendatahub-datex2
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  annotations: {}
+  className: nginx
+  hosts:
+    - host: datex.api.dev.testingmachine.eu
+      paths:
+        - path: /
+          pathType: Prefix
+
+config:
+  listenAddr: ":8080"
+  eventsUrl: "https://tourism.api.opendatahub.testingmachine.eu/v1/Announcement?pagesize=200000&tagfilter=announcement%3Atraffic-event&removenullvalues=true&getasidarray=false&source=PROVINCE_BZ&fields=Id%2CTagIds%2CGeo%2CMapping%2C_Meta%2CStartTime%2CEndTime%2CCreationTime%2CVersionTime%2CDetail"
+  source: "PROVINCE_BZ"
+  pollIntervalSeconds: 20
+  idPrefix: "urn:announcements:provincebz:"
+  internalSupplier: "ITPBZ"
+
+  subtypes:
+    - category: "traffic-event:congestion"
+      classname: "AbnormalTraffic"
+      typeValue: "slowTraffic"
+      severity: "high"
+      enabled: true
+    - category: "traffic-event:accident"
+      classname: "Accident"
+      typeValue: "accident"
+      severity: "high"
+      enabled: true
+    - category: "traffic-event:animal-on-road"
+      classname: "AnimalPresenceObstruction"
+      typeValue: "animalsOnTheRoad"
+      severity: "high"
+      enabled: true
+    - category: "traffic-event:caution"
+      classname: "RoadOrCarriagewayOrLaneManagement"
+      typeValue: "other"
+      severity: "medium"
+      enabled: true
+    - category: "traffic-event:road-work"
+      classname: "MaintenanceWorks"
+      typeValue: "roadworks"
+      severity: "medium"
+      enabled: true
+    - category: "traffic-event:weather-related"
+      classname: "PoorEnvironmentCondition"
+      typeValue: "fog"
+      severity: "high"
+      enabled: true
+    - category: "traffic-event:event"
+      classname: "PublicEvent"
+      typeValue: "majorEvent"
+      severity: "medium"
+      enabled: true
+    - category: "traffic-event:prohibition"
+      classname: "RoadOrCarriagewayOrLaneManagement"
+      typeValue: "other"
+      severity: "high"
+      enabled: true
+    - category: "traffic-event:closure"
+      classname: "RoadOrCarriagewayOrLaneManagement"
+      typeValue: "roadClosed"
+      severity: "high"
+      enabled: true
+    - category: "traffic-event:hindrance"
+      classname: "RoadOrCarriagewayOrLaneManagement"
+      typeValue: "singleAlternateLineTraffic"
+      severity: "medium"
+      enabled: true
+    - category: "traffic-event:speed-camera"
+      classname: "SpeedManagement"
+      typeValue: "policeSpeedChecksInOperation"
+      severity: "low"
+      enabled: true
+    - category: "traffic-event:road-condition"
+      classname: "WinterDrivingManagement"
+      typeValue: "winterEquipmentOnBoardRequired"
+      extraAttribute: "complianceOption"
+      extraValue: "mandatory"
+      severity: "medium"
+      enabled: true
+
+  recipients:
+    - supplier: "IT492"
+      description: "A22 - Brenner motorway"
+      path: "/datex/2/province-bz/situation-publication.xml"
+      enabled: true
+
+resources: {}
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

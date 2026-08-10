@@ -1,5 +1,4 @@
-# SPDX-FileCopyrightText: 2026 2026 NOI Techpark <digital@noi.bz.it>
-# SPDX-FileCopyrightText: 2026, 2026 NOI Techpark <digital@noi.bz.it>
+# SPDX-FileCopyrightText: 2026 NOI Techpark <digital@noi.bz.it>
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -61,10 +60,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
-# Local docker test run output
-local-test/pubblicazioni/
-equivalence/pubblicazioni/
-equivalence/log/
-
 # Go build output
-go/datexpub
+src/datexpub
