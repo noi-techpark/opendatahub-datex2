@@ -33,7 +33,7 @@ type InternationalIdentifier struct {
 }
 
 type SituationPublication struct {
-	XsiType            string                  `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+	XsiType            string                  `xml:"xsi:type,attr"`
 	Lang               string                  `xml:"lang,attr"`
 	PublicationTime    string                  `xml:"publicationTime"`
 	PublicationCreator InternationalIdentifier `xml:"publicationCreator"`
@@ -89,7 +89,7 @@ type MultilingualStringValue struct {
 }
 
 type Point struct {
-	XsiType            string             `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+	XsiType            string             `xml:"xsi:type,attr"`
 	PointByCoordinates PointByCoordinates `xml:"pointByCoordinates"`
 }
 
@@ -103,14 +103,14 @@ type PointCoordinates struct {
 }
 
 type SituationRecord struct {
-	XsiType                          string    `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+	XsiType                          string    `xml:"xsi:type,attr"`
 	Id                               string    `xml:"id,attr"`
 	Version                          string    `xml:"version,attr"`
 	SituationRecordCreationReference string    `xml:"situationRecordCreationReference,omitempty"`
 	SituationRecordCreationTime      string    `xml:"situationRecordCreationTime"`
 	SituationRecordVersionTime       string    `xml:"situationRecordVersionTime"`
-	Source                           Source    `xml:"source"`
 	ProbabilityOfOccurrence          string    `xml:"probabilityOfOccurrence"`
+	Source                           Source    `xml:"source"`
 	Validity                         Validity  `xml:"validity"`
 	GeneralPublicComment             []Comment `xml:"generalPublicComment,omitempty"`
 	GroupOfLocations                 Point     `xml:"groupOfLocations"`

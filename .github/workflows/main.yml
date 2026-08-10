@@ -12,7 +12,29 @@ env:
   VALUES_YAML_PROD: infrastructure/helm/values.prod.yaml
 
 jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: src/go.mod
+
+      - name: Run unit tests
+        working-directory: src
+        run: go test ./...
+
+      - name: Install libxml2-utils
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Run integration test
+        run: test/run_local_test.sh
+
   build:
+    needs: test
     runs-on: ubuntu-24.04
     concurrency: ${{ github.ref }}-build
     permissions:

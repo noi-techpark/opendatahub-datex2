@@ -34,4 +34,4 @@ This builds and runs the Go service from [src/](src/) against its bundled `confi
 
 ## Testing
 
-`go test ./...` in [src/](src/) runs the unit tests. [test/run_local_test.sh](test/run_local_test.sh) is an integration test: it builds the production Docker image, runs it against the real Open Data Hub API, and checks that it serves a valid DATEX II publication plus the API docs. It needs network access and Docker.
+`go test ./...` in [src/](src/) runs the unit tests. [test/run_local_test.sh](test/run_local_test.sh) is an integration test: it builds the production Docker image, runs it against the real Open Data Hub API, checks that it serves a valid DATEX II publication plus the API docs, and validates that publication against the [DATEX II 2.2.3 XSD](test/schema/DATEXIISchema_2_2_3.xsd). It needs network access, Docker, and `xmllint` (libxml2).
