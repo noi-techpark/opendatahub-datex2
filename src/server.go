@@ -8,7 +8,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"net/http"
-	"sort"
 	"sync"
 )
 
@@ -24,14 +23,6 @@ type file struct {
 	Provider string `json:"-"`
 	Type     string `json:"type"`
 	Path     string `json:"path"`
-}
-
-// providerFeeds groups the feeds published for one provider, for the
-// discoverability endpoint. Feeds maps a feed name (e.g.
-// "situation-publication") to its URL.
-type providerFeeds struct {
-	Provider string            `json:"provider"`
-	Feeds    map[string]string `json:"feeds"`
 }
 
 // Server keeps the latest rendered DATEX II XML for each recipient in
@@ -97,19 +88,12 @@ func (s *Server) serveProviderList(w http.ResponseWriter) {
 	}
 	s.mu.RUnlock()
 
-	sort.Slice(files, func(i, j int) bool {
-		if files[i].Provider != files[j].Provider {
-			return files[i].Provider < files[j].Provider
-		}
-		return files[i].Path < files[j].Path
-	})
-
-	var providers []providerFeeds
+	providers := map[string]map[string]string{}
 	for _, f := range files {
-		if len(providers) == 0 || providers[len(providers)-1].Provider != f.Provider {
-			providers = append(providers, providerFeeds{Provider: f.Provider, Feeds: map[string]string{}})
+		if providers[f.Provider] == nil {
+			providers[f.Provider] = map[string]string{}
 		}
-		providers[len(providers)-1].Feeds[f.Type] = baseURL + f.Path
+		providers[f.Provider][f.Type] = baseURL + f.Path
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
