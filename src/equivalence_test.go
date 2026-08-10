@@ -8,6 +8,7 @@ import (
 	"encoding/xml"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -158,6 +159,88 @@ func TestEquivalenceAgainstLegacyGolden(t *testing.T) {
 
 	t.Logf("compared %d golden situations against %d Go situations (%d Go-only, expected to be documented legacy drops)",
 		len(goldenByID), len(gotByID), goOnly)
+}
+
+// TestNoSilentlyEmptyFields is a defense-in-depth check, independent of the
+// golden comparison above: for every situation the Go pipeline keeps, it
+// verifies fields the source data actually populated didn't end up
+// null/empty in the output. This is exactly the failure mode of the
+// CreationTime/VersionTime bug (src/opendatahub.go's history) that
+// motivated this equivalence suite in the first place - it's checked
+// directly against the real fetched source here rather than only relying on
+// the legacy app also getting it right.
+func TestNoSilentlyEmptyFields(t *testing.T) {
+	const fixturePath = "../equivalence/fixtures/v1/Announcement"
+	if _, err := os.Stat(fixturePath); err != nil {
+		t.Skipf("%s not present - run equivalence/run_equivalence_test.sh first", fixturePath)
+	}
+
+	cfg, err := LoadConfig("../equivalence/config.yaml")
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	fixture, err := os.ReadFile(fixturePath)
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+	items, err := parseEvents(fixture)
+	if err != nil {
+		t.Fatalf("parse fixture: %v", err)
+	}
+
+	raw := make(map[string]openDataHubItem, len(items))
+	for _, it := range items {
+		raw[strings.TrimPrefix(it.Id, cfg.IDPrefix)] = it
+	}
+
+	now := time.Now()
+	filtered := filterCurrent(filterBySource(items, cfg.Source), now)
+	events := mapEvents(filtered, cfg)
+	got := buildPublication(events, cfg, now)
+
+	checked := 0
+	for _, s := range got.Payload.Situations {
+		src, ok := raw[s.Id]
+		if !ok || len(s.SituationRecords) != 1 {
+			continue
+		}
+		r := s.SituationRecords[0]
+		checked++
+
+		if !src.CreationTime.IsZero() && r.SituationRecordCreationTime == "" {
+			t.Errorf("situation %s: source FirstImport=%v but situationRecordCreationTime is empty", s.Id, src.CreationTime)
+		}
+		if !src.VersionTime.IsZero() && r.SituationRecordVersionTime == "" {
+			t.Errorf("situation %s: source LastChange=%v but situationRecordVersionTime is empty", s.Id, src.VersionTime)
+		}
+		if geo, ok := src.Geo["position"]; ok && (geo.Latitude != nil || geo.Longitude != nil) {
+			c := r.GroupOfLocations.PointByCoordinates.PointCoordinates
+			if c.Latitude == 0 && c.Longitude == 0 {
+				t.Errorf("situation %s: source has Geo[position]=%+v but groupOfLocations is 0,0", s.Id, geo)
+			}
+		}
+		if d, ok := src.Detail["it"]; ok && (d.Title != "" || d.BaseText != "") && !hasCommentValue(r, "it") {
+			t.Errorf("situation %s: source Detail[it]=%+v but no non-empty it comment in output", s.Id, d)
+		}
+		if d, ok := src.Detail["de"]; ok && (d.Title != "" || d.BaseText != "") && !hasCommentValue(r, "de") {
+			t.Errorf("situation %s: source Detail[de]=%+v but no non-empty de comment in output", s.Id, d)
+		}
+		if src.Meta.Source != "" && r.Source.SourceName.Values == nil {
+			t.Errorf("situation %s: source _Meta.Source=%q but sourceName is empty", s.Id, src.Meta.Source)
+		}
+	}
+	t.Logf("checked %d situations against their source item for silently-empty fields", checked)
+}
+
+func hasCommentValue(r SituationRecord, lang string) bool {
+	for _, c := range r.GeneralPublicComment {
+		for _, v := range c.Comment.Values {
+			if v.Lang == lang && v.Value != "" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func situationXsiType(s Situation) string {
