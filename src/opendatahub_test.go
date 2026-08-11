@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-// These cover date-relative filtering rules (e.g. "started today"), plus a
-// regression test guarding against a single malformed item (missing the
-// Geo["position"] key) breaking the entire publication cycle for every
-// recipient instead of just defaulting that one item's coordinates.
-
 func ptr(t time.Time) *time.Time { return &t }
 
 func TestFilterCurrent_ShortLivedNoEndTimeMustStartToday(t *testing.T) {
@@ -83,11 +78,8 @@ func TestCategoryOf_UnknownTagSkipped(t *testing.T) {
 	}
 }
 
-// Regression test for the "one bad item zeroes the whole cycle" bug: a
-// missing Geo["position"] must not panic, and must not drop other events
-// in the same batch - it should just default that one item's coordinates.
 func TestMapEvents_MissingGeoDoesNotDropOtherEvents(t *testing.T) {
-	cfg := &Config{IDPrefix: "urn:test:"}
+	cfg := &ProviderConfig{IDPrefix: "urn:test:"}
 	items := []openDataHubItem{
 		{Id: "urn:test:no-geo", TagIds: []string{"traffic-event:hindrance"}},
 		{Id: "urn:test:has-geo", TagIds: []string{"traffic-event:congestion"}, Geo: map[string]openDataHubGeo{

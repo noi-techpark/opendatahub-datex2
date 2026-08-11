@@ -17,6 +17,7 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /app
 COPY --from=build-env /app/datexpub .
 COPY --from=build-env /app/config.example.yaml .
+COPY --from=build-env /app/subtypes.yaml .
 ENTRYPOINT [ "./datexpub" ]
 
 FROM base AS debug

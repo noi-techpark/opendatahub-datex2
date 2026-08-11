@@ -13,43 +13,12 @@ import (
 	"time"
 )
 
-// This test proves the Go pipeline produces DATEX content equivalent to the
-// real, dockerized C# app's output, for the same real Open Data Hub input.
-// It does not run as part of a plain `go test ./...`: both
-// ../equivalence/fixtures/v1/Announcement and
-// ../equivalence/golden/IT492/SituationPublication.xml are real captures
-// produced by equivalence/run_equivalence_test.sh, not checked into git (a
-// real sample of short-lived event categories like "accident" is stale
-// within hours - freezing one into a golden file would make the test rot on
-// its own). If those files aren't present, this test skips.
-//
-// Because both sides read real, unpredictable data, situations are matched
-// by id rather than by a fixed expected set, and exactly three kinds of
-// difference are tolerated, by agreement - all bugs in the legacy app found
-// by running it for real against real data:
-//  1. animal-on-road and weather-related: the legacy TraduttoreSituation.cs
-//     never recognized "AnimalPresenceObstruction"/"PoorEnvironmentCondition"
-//     classnames, silently dropping those events entirely.
-//  2. speedManagementType, and headerInformation.urgency on every
-//     situation: legacy code sets the value but never sets the companion
-//     Specified flag the schema needs to actually serialize it, so both are
-//     silently empty/absent in the legacy output but populated in Go.
-//  3. Short-lived, open-ended events (congestion/accident/event/
-//     speed-camera/animal-on-road/weather-related with no EndTime): legacy
-//     Worker.FiltraEventiAttuali requires ev.StartTime.Date == DateTime.Now
-//     .Date without normalizing timezones first - StartTime keeps whatever
-//     Kind the JSON "Z" suffix deserialized it as (UTC) while DateTime.Now
-//     is server-local, so an event that started "today" in local time but
-//     is still "yesterday" in UTC (the ~2h window after local midnight, for
-//     Europe/Rome) is wrongly excluded. Go's sameLocalDay normalizes both
-//     sides to local time first and doesn't have this bug.
-//
-// Any other difference is a real bug and fails the test.
 func TestEquivalenceAgainstLegacyGolden(t *testing.T) {
 	const (
-		configPath  = "../equivalence/config.yaml"
-		fixturePath = "../equivalence/fixtures/v1/Announcement"
-		goldenPath  = "../equivalence/golden/IT492/SituationPublication.xml"
+		configPath   = "../equivalence/config.yaml"
+		subtypesPath = "../equivalence/subtypes.yaml"
+		fixturePath  = "../equivalence/fixtures/v1/Announcement"
+		goldenPath   = "../equivalence/golden/IT492/SituationPublication.xml"
 	)
 	for _, p := range []string{fixturePath, goldenPath} {
 		if _, err := os.Stat(p); err != nil {
@@ -60,6 +29,14 @@ func TestEquivalenceAgainstLegacyGolden(t *testing.T) {
 	cfg, err := LoadConfig(configPath)
 	if err != nil {
 		t.Fatalf("load config: %v", err)
+	}
+	provider := cfg.providerByName("province-bz")
+	if provider == nil {
+		t.Fatalf("config has no province-bz provider")
+	}
+	subtypes, err := LoadSubtypes(subtypesPath)
+	if err != nil {
+		t.Fatalf("load subtypes: %v", err)
 	}
 
 	fixture, err := os.ReadFile(fixturePath)
@@ -81,12 +58,11 @@ func TestEquivalenceAgainstLegacyGolden(t *testing.T) {
 	}
 
 	now := time.Now()
-	items = filterBySource(items, cfg.Source)
+	items = filterBySource(items, provider.Source)
 	items = filterCurrent(items, now)
-	events := mapEvents(items, cfg)
-	got := buildPublication(events, cfg, now)
+	events := mapEvents(items, provider)
+	got := buildPublication(events, provider, subtypes, now)
 
-	// Sanity check the Go side actually renders to well-formed XML.
 	rendered, err := renderXML(got)
 	if err != nil {
 		t.Fatalf("render xml: %v", err)
@@ -110,11 +86,6 @@ func TestEquivalenceAgainstLegacyGolden(t *testing.T) {
 	gotByID := indexByID(got.Payload.Situations)
 	goldenByID := indexByID(golden.Payload.Situations)
 
-	// isDocumentedDrop reports whether s being present only in the Go output
-	// is one of the two documented legacy bugs: never-recognized classnames
-	// (always dropped, regardless of dates), or the open-ended-short-lived
-	// timezone bug (only for the affected classnames, and only when the
-	// event actually has no end time - see the package doc comment).
 	openEndedShortLived := map[string]bool{
 		"AbnormalTraffic": true, // congestion
 		"Accident":        true,
@@ -161,14 +132,6 @@ func TestEquivalenceAgainstLegacyGolden(t *testing.T) {
 		len(goldenByID), len(gotByID), goOnly)
 }
 
-// TestNoSilentlyEmptyFields is a defense-in-depth check, independent of the
-// golden comparison above: for every situation the Go pipeline keeps, it
-// verifies fields the source data actually populated didn't end up
-// null/empty in the output. This is exactly the failure mode of the
-// CreationTime/VersionTime bug (src/opendatahub.go's history) that
-// motivated this equivalence suite in the first place - it's checked
-// directly against the real fetched source here rather than only relying on
-// the legacy app also getting it right.
 func TestNoSilentlyEmptyFields(t *testing.T) {
 	const fixturePath = "../equivalence/fixtures/v1/Announcement"
 	if _, err := os.Stat(fixturePath); err != nil {
@@ -178,6 +141,14 @@ func TestNoSilentlyEmptyFields(t *testing.T) {
 	cfg, err := LoadConfig("../equivalence/config.yaml")
 	if err != nil {
 		t.Fatalf("load config: %v", err)
+	}
+	provider := cfg.providerByName("province-bz")
+	if provider == nil {
+		t.Fatalf("config has no province-bz provider")
+	}
+	subtypes, err := LoadSubtypes("../equivalence/subtypes.yaml")
+	if err != nil {
+		t.Fatalf("load subtypes: %v", err)
 	}
 	fixture, err := os.ReadFile(fixturePath)
 	if err != nil {
@@ -190,13 +161,13 @@ func TestNoSilentlyEmptyFields(t *testing.T) {
 
 	raw := make(map[string]openDataHubItem, len(items))
 	for _, it := range items {
-		raw[strings.TrimPrefix(it.Id, cfg.IDPrefix)] = it
+		raw[strings.TrimPrefix(it.Id, provider.IDPrefix)] = it
 	}
 
 	now := time.Now()
-	filtered := filterCurrent(filterBySource(items, cfg.Source), now)
-	events := mapEvents(filtered, cfg)
-	got := buildPublication(events, cfg, now)
+	filtered := filterCurrent(filterBySource(items, provider.Source), now)
+	events := mapEvents(filtered, provider)
+	got := buildPublication(events, provider, subtypes, now)
 
 	checked := 0
 	for _, s := range got.Payload.Situations {
@@ -258,10 +229,6 @@ func indexByID(situations []Situation) map[string]Situation {
 	return out
 }
 
-// compareSituation checks content equivalence field by field. Date/time
-// fields are compared as instants (parsed), not as strings: the real C#
-// output re-expresses timestamps in the container's local offset, which is
-// the same instant in a different representation, not a mismatch.
 func compareSituation(t *testing.T, id string, got, want Situation) {
 	t.Helper()
 
@@ -272,8 +239,6 @@ func compareSituation(t *testing.T, id string, got, want Situation) {
 		got.HeaderInformation.InformationStatus != want.HeaderInformation.InformationStatus {
 		t.Errorf("situation %s: headerInformation: got %+v, want %+v", id, got.HeaderInformation, want.HeaderInformation)
 	}
-	// Urgency is a documented divergence (see the fix note on
-	// HeaderInformation in datex.go's history): legacy never serializes it.
 	if got.HeaderInformation.Urgency != "normalUrgency" {
 		t.Errorf("situation %s: got urgency=%q, want normalUrgency", id, got.HeaderInformation.Urgency)
 	}
@@ -341,9 +306,6 @@ func compareSituation(t *testing.T, id string, got, want Situation) {
 	if g.ComplianceOption != w.ComplianceOption {
 		t.Errorf("situation %s: complianceOption: got %q, want %q", id, g.ComplianceOption, w.ComplianceOption)
 	}
-	// speedManagementType is a documented divergence (see translate.go's
-	// history): the legacy code never sets speedManagementTypeSpecified, so
-	// it's silently dropped there but populated in Go.
 	if g.XsiType == "SpeedManagement" {
 		if w.SpeedManagementType != "" {
 			t.Errorf("situation %s: golden unexpectedly has speedManagementType=%q - is the legacy app fixed now?", id, w.SpeedManagementType)
@@ -377,12 +339,6 @@ func compareSituation(t *testing.T, id string, got, want Situation) {
 	}
 }
 
-// sameInstant compares to millisecond precision, not exact equality: Go's
-// dateTimeLayout ("...Z07:00" with ".000") truncates to milliseconds, while
-// the C# side preserves its native tick precision (100ns) from the same
-// source timestamp - so the two are the same instant to the precision Go
-// actually outputs, but never bit-for-bit equal past the millisecond. That's
-// a formatting choice, not a mapping difference.
 func sameInstant(t *testing.T, id, field, got, want string) bool {
 	t.Helper()
 	gt, err := time.Parse(time.RFC3339Nano, got)
