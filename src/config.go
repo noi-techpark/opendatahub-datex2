@@ -11,39 +11,23 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config is loaded from a YAML file and re-read on every poll cycle, so
-// config changes apply without a restart.
 type Config struct {
-	ListenAddr          string      `yaml:"listenAddr"`
-	BaseURL             string      `yaml:"baseUrl"`
-	Provider            string      `yaml:"provider"`
+	ListenAddr   string           `yaml:"listenAddr"`
+	BaseURL      string           `yaml:"baseUrl"`
+	SubtypesFile string           `yaml:"subtypesFile"`
+	Providers    []ProviderConfig `yaml:"providers"`
+}
+
+type ProviderConfig struct {
+	Name                string      `yaml:"name"`
 	EventsURL           string      `yaml:"eventsUrl"`
 	Source              string      `yaml:"source"`
 	PollIntervalSeconds int         `yaml:"pollIntervalSeconds"`
 	IDPrefix            string      `yaml:"idPrefix"`
 	InternalSupplier    string      `yaml:"internalSupplier"`
-	Subtypes            []Subtype   `yaml:"subtypes"`
 	Recipients          []Recipient `yaml:"recipients"`
 }
 
-// Subtype maps one Open Data Hub traffic-event category to the DATEX II
-// classname/typeValue it should be published as.
-type Subtype struct {
-	Category       string `yaml:"category"`
-	Classname      string `yaml:"classname"`
-	TypeValue      string `yaml:"typeValue"`
-	ExtraAttribute string `yaml:"extraAttribute"`
-	ExtraValue     string `yaml:"extraValue"`
-	Severity       string `yaml:"severity"`
-	Enabled        bool   `yaml:"enabled"`
-}
-
-// Recipient is one DATEX II document published for this provider. Type
-// identifies which document it is (e.g. "situation-publication") - a
-// provider may publish more than one DATEX II document type in the future,
-// and not every provider necessarily offers the same set. Path is where it
-// is served; by convention it should follow
-// /datex/2/{provider}/{type}.xml.
 type Recipient struct {
 	Type        string `yaml:"type"`
 	Supplier    string `yaml:"supplier"`
@@ -64,11 +48,18 @@ func LoadConfig(path string) (*Config, error) {
 	return &cfg, nil
 }
 
-func (c *Config) subtypeFor(category string) *Subtype {
-	for i := range c.Subtypes {
-		if c.Subtypes[i].Category == category && c.Subtypes[i].Enabled {
-			return &c.Subtypes[i]
+func (c *Config) providerByName(name string) *ProviderConfig {
+	for i := range c.Providers {
+		if c.Providers[i].Name == name {
+			return &c.Providers[i]
 		}
 	}
 	return nil
+}
+
+func (c *Config) subtypesPath() string {
+	if c.SubtypesFile != "" {
+		return c.SubtypesFile
+	}
+	return "subtypes.yaml"
 }

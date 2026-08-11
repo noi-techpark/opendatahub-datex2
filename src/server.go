@@ -17,16 +17,12 @@ var openapiSpec []byte
 //go:embed docs/redoc.html
 var redocPage []byte
 
-// file is one published DATEX II document, for the discoverability
-// endpoint.
 type file struct {
 	Provider string `json:"-"`
 	Type     string `json:"type"`
 	Path     string `json:"path"`
 }
 
-// Server keeps the latest rendered DATEX II XML for each recipient in
-// memory and serves it at that recipient's configured path.
 type Server struct {
 	mu      sync.RWMutex
 	baseURL string
@@ -77,8 +73,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// serveProviderList answers the discoverability endpoint: which providers
-// are available, and which DATEX II files each one currently publishes.
 func (s *Server) serveProviderList(w http.ResponseWriter) {
 	s.mu.RLock()
 	baseURL := s.baseURL

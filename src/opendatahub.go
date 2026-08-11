@@ -12,16 +12,6 @@ import (
 	"time"
 )
 
-// openDataHubItem is the subset of Open Data Hub Announcement item fields
-// this service reads, matching the field list requested in eventsUrl, named
-// exactly as the API names them (see AnnouncementModel.cs's Item class and
-// the Announcement schema at content.api.opendatahub.com's
-// /swagger/v1/swagger.json). Notably there is no "CreationTime"/
-// "VersionTime" here: the API does accept those as field names in the
-// fields= query parameter, but only because it echoes back any field name
-// you ask for, real or not, as null - they aren't real properties. The
-// event's actual creation/change timestamps are FirstImport/LastChange,
-// mapped onto event.CreationTime/event.VersionTime in mapEvents.
 type openDataHubItem struct {
 	Id          string                       `json:"Id"`
 	TagIds      []string                     `json:"TagIds"`
@@ -86,9 +76,6 @@ func parseEvents(body []byte) ([]openDataHubItem, error) {
 	return parsed.Items, nil
 }
 
-// The 12 traffic-event tags this service recognizes, and the subset of
-// those treated as "short-lived" for the purposes of current-event
-// filtering.
 var trafficEventTags = []string{
 	"traffic-event:accident",
 	"traffic-event:animal-on-road",
@@ -130,10 +117,6 @@ func categoryOf(item openDataHubItem) (string, bool) {
 	return "", false
 }
 
-// filterBySource re-applies the source filter client-side as a safety net
-// on top of the source= query parameter already in eventsUrl, in case the
-// upstream API ever returns items from other sources. The source id to
-// match against is config-driven, so this works for any provider's feed.
 func filterBySource(items []openDataHubItem, source string) []openDataHubItem {
 	out := items[:0:0]
 	for _, it := range items {
@@ -144,10 +127,6 @@ func filterBySource(items []openDataHubItem, source string) []openDataHubItem {
 	return out
 }
 
-// filterCurrent keeps only events that are still relevant now: short-lived
-// categories need to have started today (if open-ended) or not yet ended;
-// everything else is valid unless it has an end time that's already
-// passed.
 func filterCurrent(items []openDataHubItem, now time.Time) []openDataHubItem {
 	out := items[:0:0]
 

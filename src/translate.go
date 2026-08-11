@@ -13,12 +13,6 @@ import (
 
 const dateTimeLayout = "2006-01-02T15:04:05.000Z07:00"
 
-// event holds the per-item fields needed to build a DATEX II
-// SituationRecord. Fields like SourceCountry, SourceType, SourceReliable,
-// Confidentiality, InformationStatus, Urgency, Probability, AreaOfInterest,
-// and GeneralPublicCommentType are always constants in the output (see
-// buildRecord/buildPublication) rather than derived per-event, so there's
-// no need to carry them here.
 type event struct {
 	Id           string
 	Reference    string
@@ -35,10 +29,7 @@ type event struct {
 	SourceName   string
 }
 
-// mapEvents builds the internal event list from filtered Open Data Hub items,
-// skipping any item whose tags don't match one of the 12 known
-// traffic-event categories.
-func mapEvents(items []openDataHubItem, cfg *Config) []event {
+func mapEvents(items []openDataHubItem, provider *ProviderConfig) []event {
 	var out []event
 	for _, item := range items {
 		category, ok := categoryOf(item)
@@ -47,7 +38,7 @@ func mapEvents(items []openDataHubItem, cfg *Config) []event {
 		}
 
 		e := event{
-			Id:           strings.TrimPrefix(item.Id, cfg.IDPrefix),
+			Id:           strings.TrimPrefix(item.Id, provider.IDPrefix),
 			Version:      1,
 			Category:     category,
 			CreationTime: item.FirstImport,
@@ -90,12 +81,8 @@ func joinTitleAndText(d openDataHubDetail) string {
 	return d.Title + " " + d.BaseText
 }
 
-// buildPublication builds one Situation with a single SituationRecord per
-// event. The DATEX II schema allows multiple records per situation, but
-// each event here always gets its own situation id, so that never applies
-// in practice.
-func buildPublication(events []event, cfg *Config, now time.Time) *D2LogicalModel {
-	creator := InternationalIdentifier{Country: "it", NationalIdentifier: cfg.InternalSupplier}
+func buildPublication(events []event, provider *ProviderConfig, subtypes SubtypeMap, now time.Time) *D2LogicalModel {
+	creator := InternationalIdentifier{Country: "it", NationalIdentifier: provider.InternalSupplier}
 
 	pub := SituationPublication{
 		XsiType:            "SituationPublication",
@@ -104,15 +91,13 @@ func buildPublication(events []event, cfg *Config, now time.Time) *D2LogicalMode
 		PublicationCreator: creator,
 	}
 
-	// Sort by Id for deterministic output; since Id is a string, this is a
-	// lexicographic, not numeric, sort.
 	sorted := make([]event, len(events))
 	copy(sorted, events)
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Id < sorted[j].Id })
 
 	for _, e := range sorted {
-		subtype := cfg.subtypeFor(e.Category)
-		record := buildRecord(e, subtype, cfg.InternalSupplier, now)
+		subtype := subtypes.subtypeFor(e.Category)
+		record := buildRecord(e, subtype, provider.InternalSupplier, now)
 		if record == nil {
 			continue
 		}
@@ -144,10 +129,6 @@ func buildPublication(events []event, cfg *Config, now time.Time) *D2LogicalMode
 	}
 }
 
-// buildRecord builds one SituationRecord for the given event. Returns nil
-// if the event's subtype isn't configured/enabled, or isn't one of the
-// known classnames - such events are silently excluded from the
-// publication.
 func buildRecord(e event, subtype *Subtype, internalSupplier string, now time.Time) *SituationRecord {
 	if subtype == nil {
 		return nil
@@ -250,10 +231,6 @@ func buildRecord(e event, subtype *Subtype, internalSupplier string, now time.Ti
 	return r
 }
 
-// setValidity computes ValidityStatus/ProbabilityOfOccurrence from the
-// event's start/end time. A nil EndTime is treated as "no upper bound",
-// consistent with how the rest of the pipeline treats it, so
-// ongoing/permanent events are correctly marked active.
 func setValidity(r *SituationRecord, e event, now time.Time) {
 	v := Validity{
 		ValidityTimeSpecification: OverallPeriod{
