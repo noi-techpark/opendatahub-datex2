@@ -17,6 +17,8 @@ info:
 externalDocs:
   description: GitHub repository
   url: https://github.com/noi-techpark/opendatahub-datex2
+servers:
+  - url: https://datex.api.opendatahub.com
 paths:
   /datex/2/:
     get:

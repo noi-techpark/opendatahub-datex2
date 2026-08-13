@@ -22,7 +22,7 @@ Each event provider's DATEX II XML is served at
 available providers and, for each, the DATEX II files it currently
 publishes.
 
-`/` serves interactive API docs (Redoc), and `/openapi.yaml` the underlying spec.
+`/` serves interactive API docs (Swagger UI), and `/openapi.yaml` the underlying spec.
 
 ## Running locally
 
