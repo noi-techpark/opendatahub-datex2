@@ -19,11 +19,6 @@ externalDocs:
   url: https://github.com/noi-techpark/opendatahub-datex2
 servers:
   - url: /
-    description: >
-      Same host the docs page is served from. Kept relative rather than an
-      absolute URL so "Try it out" works against whichever environment
-      (production, testing, or local) is currently serving this page,
-      without running into cross-origin request issues.
 paths:
   /datex/2/:
     get:
