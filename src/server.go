@@ -14,8 +14,8 @@ import (
 //go:embed docs/openapi.yaml
 var openapiSpec []byte
 
-//go:embed docs/redoc.html
-var redocPage []byte
+//go:embed docs/swagger.html
+var swaggerPage []byte
 
 type file struct {
 	Provider string `json:"-"`
@@ -51,7 +51,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/":
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Write(redocPage)
+		w.Write(swaggerPage)
 		return
 	case "/openapi.yaml":
 		w.Header().Set("Content-Type", "text/yaml; charset=utf-8")

@@ -16,13 +16,11 @@ service:
 
 ingress:
   enabled: true
-  annotations:
-    cert-manager.io/issuer: "letsencrypt-prod"
+  # TLS terminates at the Caddy proxy in front of the cluster, which forwards
+  # plain HTTP here, so this ingress has no cert-manager annotation or tls
+  # block of its own.
+  annotations: {}
   className: nginx
-  tls:
-    - hosts:
-        - datex.api.opendatahub.com
-      secretName: tls-datex2
   hosts:
     - host: datex.api.opendatahub.com
       paths:
