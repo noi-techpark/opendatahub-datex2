@@ -18,7 +18,12 @@ externalDocs:
   description: GitHub repository
   url: https://github.com/noi-techpark/opendatahub-datex2
 servers:
-  - url: https://datex.api.opendatahub.com
+  - url: /
+    description: >
+      Same host the docs page is served from. Kept relative rather than an
+      absolute URL so "Try it out" works against whichever environment
+      (production, testing, or local) is currently serving this page,
+      without running into cross-origin request issues.
 paths:
   /datex/2/:
     get:
@@ -33,11 +38,15 @@ paths:
             application/json:
               schema:
                 type: object
-                description: Provider name to feed name to URL.
+                description: Provider name to feed type to feed URL.
                 additionalProperties:
                   type: object
                   additionalProperties:
                     type: string
+                    format: uri
+              example:
+                province-bz:
+                  situation-publication: "https://datex.api.opendatahub.com/datex/2/province-bz/situation-publication.xml"
   /datex/2/{provider}/situation-publication.xml:
     get:
       summary: DATEX II situation publication
@@ -58,5 +67,73 @@ paths:
             application/xml:
               schema:
                 type: string
+              example: |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2">
+                  <exchange>
+                    <supplierIdentification>
+                      <country>it</country>
+                      <nationalIdentifier>ITPBZ</nationalIdentifier>
+                    </supplierIdentification>
+                  </exchange>
+                  <payloadPublication xmlns:_XMLSchema-instance="http://www.w3.org/2001/XMLSchema-instance" _XMLSchema-instance:type="SituationPublication" lang="it">
+                    <publicationTime>2026-08-13T09:24:52.671Z</publicationTime>
+                    <publicationCreator>
+                      <country>it</country>
+                      <nationalIdentifier>ITPBZ</nationalIdentifier>
+                    </publicationCreator>
+                    <situation id="00937352-d044-58be-a11c-0b5d027d323d" version="1">
+                      <overallSeverity>medium</overallSeverity>
+                      <headerInformation>
+                        <confidentiality>noRestriction</confidentiality>
+                        <informationStatus>real</informationStatus>
+                        <urgency>normalUrgency</urgency>
+                      </headerInformation>
+                      <situationRecord _XMLSchema-instance:type="RoadOrCarriagewayOrLaneManagement" id="00937352-d044-58be-a11c-0b5d027d323d" version="1">
+                        <situationRecordCreationReference>2918412</situationRecordCreationReference>
+                        <situationRecordCreationTime>2025-11-18T10:48:13.949Z</situationRecordCreationTime>
+                        <situationRecordVersionTime>2026-06-10T07:10:00.626Z</situationRecordVersionTime>
+                        <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                        <source>
+                          <sourceCountry>it</sourceCountry>
+                          <sourceIdentification>ITPBZ</sourceIdentification>
+                          <sourceName>
+                            <values>
+                              <value lang="it">PROVINCE_BZ</value>
+                            </values>
+                          </sourceName>
+                          <sourceType>roadAuthorities</sourceType>
+                          <reliable>true</reliable>
+                        </source>
+                        <validity>
+                          <validityStatus>active</validityStatus>
+                          <validityTimeSpecification>
+                            <overallStartTime>2025-01-26T23:00:00.000Z</overallStartTime>
+                            <overallEndTime>2028-01-31T00:00:00.000Z</overallEndTime>
+                          </validityTimeSpecification>
+                        </validity>
+                        <generalPublicComment>
+                          <comment>
+                            <values>
+                              <value lang="it">Intralcio Viabilità Generale Chiusura o Blocco</value>
+                            </values>
+                          </comment>
+                          <commentDateTime>2026-06-10T07:10:00.626Z</commentDateTime>
+                          <commentType>description</commentType>
+                        </generalPublicComment>
+                        <groupOfLocations _XMLSchema-instance:type="Point">
+                          <pointByCoordinates>
+                            <pointCoordinates>
+                              <latitude>46.49305</latitude>
+                              <longitude>11.354679</longitude>
+                            </pointCoordinates>
+                          </pointByCoordinates>
+                        </groupOfLocations>
+                        <complianceOption>mandatory</complianceOption>
+                        <roadOrCarriagewayOrLaneManagementType>singleAlternateLineTraffic</roadOrCarriagewayOrLaneManagementType>
+                      </situationRecord>
+                    </situation>
+                  </payloadPublication>
+                </d2LogicalModel>
         "404":
           description: Not found
