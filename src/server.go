@@ -48,6 +48,9 @@ func (s *Server) publish(provider, fileType, path string, body []byte) {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// The docs site embeds this spec and its endpoints from another origin.
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	switch r.URL.Path {
 	case "/":
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
