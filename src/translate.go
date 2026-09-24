@@ -74,11 +74,22 @@ func mapEvents(items []openDataHubItem, provider *ProviderConfig) []event {
 	return out
 }
 
+// maxCommentLength is the DATEX II 2.2.3 maxLength for a multilingual string value.
+const maxCommentLength = 1024
+
 func joinTitleAndText(d openDataHubDetail) string {
 	if d.BaseText == "" {
-		return d.Title
+		return truncateRunes(d.Title, maxCommentLength)
 	}
-	return d.Title + " " + d.BaseText
+	return truncateRunes(d.Title+" "+d.BaseText, maxCommentLength)
+}
+
+func truncateRunes(s string, max int) string {
+	r := []rune(s)
+	if len(r) <= max {
+		return s
+	}
+	return string(r[:max-1]) + "…"
 }
 
 func buildPublication(events []event, provider *ProviderConfig, subtypes SubtypeMap, now time.Time) *D2LogicalModel {
